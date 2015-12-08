@@ -162,6 +162,22 @@ func parseConfig(configFlag string) (*Config, error) {
 			err))
 	}
 
+    var cb_consul_host_override string = os.Getenv("CB_CONSUL_HOST")
+    var cb_consul_port_override string = os.Getenv("CB_CONSUL_PORT")
+    if len(cb_consul_host_override) > 0 || len(cb_consul_port_override) > 0 {
+        host, port, err := net.SplitHostPort(config.Consul)
+		if err != nil {
+			return nil, errors.New(fmt.Sprintf("Error from SplitHostPort: %s", err))
+		}
+        if len(cb_consul_host_override) > 0 {
+            host = cb_consul_host_override
+        }
+        if len(cb_consul_port_override) > 0 {
+            port = cb_consul_port_override
+        }
+        config.Consul = fmt.Sprintf("%s:%s", host, port)
+    }
+
 	return config, nil
 }
 
